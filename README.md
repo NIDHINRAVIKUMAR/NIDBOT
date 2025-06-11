@@ -1,1 +1,1 @@
-# NIDBOT
+Developed an intelligent PDF-based chatbot named "NidBot" using FastAPI, HTML, JavaScript, and Python, enabling users to ask questions and receive answers from uploaded documents. Integrated Retrieval-Augmented Generation (RAG) with Flan-T5 and sentence-transformers for accurate, context-aware responses. Implemented user authentication with JWT and designed a dual-mode interface for general and document-specific queries.
