@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NidBot - Chat with PDF</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #a9d4f5, #d2ecfa);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+    }
+    h1, h2 {
+      margin: 10px 0;
+      text-align: center;
+      color: #003366;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+    }
+    h1 { font-size: 3rem; }
+    h2 { font-weight: 400; }
+    #container {
+      width: 90%;
+      max-width: 800px;
+      margin: 30px 0;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+    }
+    #upload-form,
+    #chat-form {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    #upload-form input[type="file"] {
+      flex: 1;
+      padding: 10px;
+      background: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    #upload-form input[type="submit"],
+    #chat-form button,
+    .mode-toggle button {
+      background-color: #007BFF;
+      color: white;
+      font-weight: bold;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    #upload-form input[type="submit"]:hover,
+    #chat-form button:hover,
+    .mode-toggle button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .mode-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    #chat-box {
+      flex: 1;
+      min-height: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 20px;
+      background: #e6f2ff;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .message {
+      margin: 10px 0;
+      padding: 12px 18px;
+      border-radius: 16px;
+      max-width: 75%;
+      line-height: 1.5;
+      font-size: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .user {
+      background-color: #d0ebff;
+      color: #003366;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+    .bot {
+      background-color: #f0fff0;
+      color: #005500;
+      align-self: flex-start;
+      margin-right: auto;
+    }
+    #user-input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    #logout-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #ff4d4d;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: background 0.3s ease;
+    }
+    #logout-btn:hover {
+      background-color: #cc0000;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #bbb;
+      border-radius: 10px;
+    }
+    .active-mode {
+      background-color: #007BFF !important;
+      color: white !important;
+    }
+    .inactive-mode {
+      background-color: #ccc !important;
+      color: #333 !important;
+    }
+  </style>
+</head>
+<body>
+
+<a href="/logout" id="logout-btn">Logout</a>
+
+<h1>👋 Welcome to NidBot</h1>
+<h2>Instant answers from your PDFs and beyond</h2>
+
+<div id="container">
+  <!-- Upload PDF Form -->
+  <form id="upload-form" enctype="multipart/form-data">
+    <input name="pdf_file" id="pdf_file" type="file" accept="application/pdf" required />
+    <input type="submit" value="Upload PDF" />
+  </form>
+
+  <!-- Mode Toggle -->
+  <div class="mode-toggle">
+    <button id="pdf-mode" class="active-mode">File Mode</button>
+    <button id="general-mode" class="inactive-mode">General Mode</button>
+  </div>
+
+  <!-- Chat Box -->
+  <div id="chat-box"></div>
+
+  <!-- Chat Form -->
+  <form id="chat-form">
+    <input type="text" id="user-input" placeholder="Type your question..." required />
+    <button type="submit">Send</button>
+  </form>
+</div>
+
+<script>
+  const uploadForm = document.getElementById("upload-form");
+  const chatBox = document.getElementById("chat-box");
+  const chatForm = document.getElementById("chat-form");
+  const userInput = document.getElementById("user-input");
+
+  const pdfBtn = document.getElementById("pdf-mode");
+  const generalBtn = document.getElementById("general-mode");
+
+  let mode = "pdf"; // default
+
+  pdfBtn.addEventListener("click", () => {
+    mode = "pdf";
+    pdfBtn.classList.add("active-mode");
+    pdfBtn.classList.remove("inactive-mode");
+    generalBtn.classList.remove("active-mode");
+    generalBtn.classList.add("inactive-mode");
+  });
+
+  generalBtn.addEventListener("click", () => {
+    mode = "general";
+    generalBtn.classList.add("active-mode");
+    generalBtn.classList.remove("inactive-mode");
+    pdfBtn.classList.remove("active-mode");
+    pdfBtn.classList.add("inactive-mode");
+  });
+
+  uploadForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fileInput = document.getElementById("pdf_file");
+    if (!fileInput.files.length) {
+      alert("Please select a PDF file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("pdf_file", fileInput.files[0]);
+
+    try {
+      const res = await fetch("/upload-pdf/", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (res.ok && data.message) {
+        const botNotice = document.createElement("div");
+        botNotice.className = "message bot";
+        botNotice.textContent = "✅ PDF successfully uploaded.";
+        chatBox.appendChild(botNotice);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        userInput.focus();
+      } else if (data.error) {
+        alert("Error: " + data.error);
+      }
+    } catch (err) {
+      alert("Something went wrong while uploading the PDF.");
+    }
+  });
+
+  chatForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const question = userInput.value.trim();
+    if (!question) return;
+
+    const userMessage = document.createElement("div");
+    userMessage.className = "message user";
+    userMessage.textContent = `You: ${question}`;
+    chatBox.appendChild(userMessage);
+
+    userInput.value = "";
+    userInput.focus();
+
+    try {
+      const endpoint = mode === "pdf" ? "/ask/pdf" : "/ask/general";
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: question }),
+      });
+
+      const data = await res.json();
+
+      const botMessage = document.createElement("div");
+      botMessage.className = "message bot";
+      botMessage.textContent = `NidBot: ${data.answer}`;
+      chatBox.appendChild(botMessage);
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    } catch (err) {
+      const errorMessage = document.createElement("div");
+      errorMessage.className = "message bot";
+      errorMessage.textContent = "NidBot: Error fetching response.";
+      chatBox.appendChild(errorMessage);
+    }
+  });
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const reminder = document.createElement("div");
+    reminder.className = "message bot";
+    reminder.textContent = "📢 If you are using PDF mode and NidBot says 'unanswerable', the PDF doesn't have that info. General Mode can help you go beyond!";
+    chatBox.appendChild(reminder);
+  });
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+

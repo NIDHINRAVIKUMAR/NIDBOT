@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Welcome to NidBot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      overflow: hidden;
+      flex-direction: column;
+    }
+    .bubbles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .bubbles span {
+      position: absolute;
+      display: block;
+      list-style: none;
+      width: 20px;
+      height: 20px;
+      background: rgba(255 255 255 / 0.15);
+      border-radius: 50%;
+      animation: floatUp 10s linear infinite;
+      bottom: -50px;
+      filter: drop-shadow(0 0 5px rgba(255 255 255 / 0.2));
+    }
+    .bubbles span:nth-child(1) {
+      left: 10%;
+      width: 25px;
+      height: 25px;
+      animation-delay: 0s;
+      animation-duration: 12s;
+    }
+    .bubbles span:nth-child(2) {
+      left: 20%;
+      width: 18px;
+      height: 18px;
+      animation-delay: 3s;
+      animation-duration: 8s;
+    }
+    .bubbles span:nth-child(3) {
+      left: 40%;
+      width: 30px;
+      height: 30px;
+      animation-delay: 6s;
+      animation-duration: 10s;
+    }
+    .bubbles span:nth-child(4) {
+      left: 60%;
+      width: 15px;
+      height: 15px;
+      animation-delay: 4s;
+      animation-duration: 9s;
+    }
+    .bubbles span:nth-child(5) {
+      left: 80%;
+      width: 20px;
+      height: 20px;
+      animation-delay: 2s;
+      animation-duration: 11s;
+    }
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-120vh) translateX(20px);
+        opacity: 0;
+      }
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      background: rgba(255 255 255 / 0.12);
+      padding: 50px 40px;
+      border-radius: 24px;
+      width: 400px;
+      max-width: 90%;
+      box-shadow:
+        0 8px 32px rgba(255 255 255 / 0.1),
+        0 0 0 1px rgba(255 255 255 / 0.15);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      text-align: center;
+      color: #fafafa;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-weight: 600;
+      font-size: 2.8rem;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    p.subtitle {
+      margin: 0 0 35px;
+      font-weight: 300;
+      font-size: 1.15rem;
+      color: #dcdcdc;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      background: rgba(255 255 255 / 0.25);
+      border: none;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      color: #fff;
+      font-weight: 500;
+      box-shadow: inset 0 2px 6px rgba(255 255 255 / 0.15);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    input::placeholder {
+      color: #e0e0e0;
+      font-weight: 400;
+    }
+    input:focus {
+      background: rgba(255 255 255 / 0.4);
+      box-shadow: 0 0 12px #764ba2;
+      color: #fff;
+    }
+
+    /* Password container & eye icon */
+    .password-container {
+      position: relative;
+      width: 100%;
+    }
+    .password-container input {
+      padding-right: 40px; /* space for eye icon */
+    }
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: rgba(255 255 255 / 0.7);
+      user-select: none;
+      transition: color 0.3s ease;
+      line-height: 1;
+    }
+    .toggle-password:hover {
+      color: #fff;
+    }
+
+    button.submit-btn {
+      background: linear-gradient(90deg, #764ba2 0%, #667eea 100%);
+      border: none;
+      border-radius: 18px;
+      padding: 16px 0;
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #fff;
+      cursor: pointer;
+      box-shadow:
+        0 5px 15px rgba(102, 126, 234, 0.7);
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+      letter-spacing: 0.05em;
+      user-select: none;
+    }
+    button.submit-btn:hover,
+    button.submit-btn:focus {
+      box-shadow:
+        0 10px 30px rgba(118, 75, 162, 0.85);
+      transform: scale(1.05);
+      outline: none;
+    }
+    .error-message {
+      margin-top: 12px;
+      color: #ff6b6b;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    }
+    .success-message {
+      margin-top: 12px;
+      color: #00ff95;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    }
+    .toggle-link {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #dcdcdc;
+      cursor: pointer;
+      user-select: none;
+    }
+    .toggle-link:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+    /* Responsive */
+    @media (max-width: 450px) {
+      .container {
+        padding: 35px 25px;
+      }
+      h1 {
+        font-size: 2.2rem;
+      }
+      button.submit-btn {
+        font-size: 1.05rem;
+        padding: 14px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bubbles">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="container">
+    <h1>Welcome to NidBot</h1>
+    <p class="subtitle">Your personal question-answer assistant</p>
+
+    <!-- Login Form -->
+    <form id="loginForm" action="/login" method="post" autocomplete="off" style="display:none;">
+      <input type="text" id="loginUsername" name="username" placeholder="Username" required autocomplete="username" />
+      <input type="email" id="loginEmail" name="email" placeholder="Email Address" required autocomplete="email" />
+      <div class="password-container">
+        <input type="password" id="loginPassword" name="password" placeholder="Password" required autocomplete="current-password" />
+        <span class="toggle-password" data-target="loginPassword" title="Show/Hide Password">&#128065;</span>
+      </div>
+      <button type="submit" class="submit-btn">Login</button>
+    </form>
+
+    <!-- Signup Form (Default visible) -->
+    <form id="signupForm" action="/signup" method="post" autocomplete="off">
+      <input type="text" id="signupUsername" name="username" placeholder="Username" required autocomplete="username" />
+      <input type="email" id="signupEmail" name="email" placeholder="Email Address" required autocomplete="email" />
+      <div class="password-container">
+        <input type="password" id="signupPassword" name="password" placeholder="Password" required autocomplete="new-password" />
+        <span class="toggle-password" data-target="signupPassword" title="Show/Hide Password">&#128065;</span>
+      </div>
+      <div class="password-container">
+        <input type="password" id="signupConfirmPassword" name="confirm_password" placeholder="Confirm Password" required autocomplete="new-password" />
+        <span class="toggle-password" data-target="signupConfirmPassword" title="Show/Hide Password">&#128065;</span>
+      </div>
+      <button type="submit" class="submit-btn">Sign Up</button>
+    </form>
+
+    <!-- Toggle link below forms -->
+    <p class="toggle-link" id="toggleLink">
+      Already have an account? <span id="toggleText" style="font-weight:bold; text-decoration:underline;">Login here</span>
+    </p>
+
+    <div id="errorMessage" class="error-message" style="display:none;"></div>
+    <div id="successMessage" class="success-message" style="display:none;"></div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const toggleLink = document.getElementById('toggleLink');
+    const toggleText = document.getElementById('toggleText');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+
+    // Show signup form by default
+    let showingSignup = true;
+
+    toggleLink.addEventListener('click', () => {
+      errorMessage.style.display = 'none'; // Clear errors on toggle
+      successMessage.style.display = 'none'; // Clear success on toggle
+      if (showingSignup) {
+        signupForm.style.display = 'none';
+        loginForm.style.display = 'flex';
+        toggleText.textContent = "Sign up here";
+        toggleLink.firstChild.textContent = "Don't have an account? ";
+        showingSignup = false;
+      } else {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'flex';
+        toggleText.textContent = "Login here";
+        toggleLink.firstChild.textContent = "Already have an account? ";
+        showingSignup = true;
+      }
+    });
+
+    // Email validation helper
+    function validateEmail(email) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailPattern.test(email);
+    }
+
+    // Common function to show error message
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorMessage.style.display = 'block';
+      successMessage.style.display = 'none';
+    }
+
+    // Signup validation
+    signupForm.addEventListener('submit', function(e) {
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+
+      const username = document.getElementById('signupUsername').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value.trim();
+      const confirmPassword = document.getElementById('signupConfirmPassword').value.trim();
+
+      if (!username) {
+        e.preventDefault();
+        showError('Please enter your username.');
+        return;
+      }
+      if (!email) {
+        e.preventDefault();
+        showError('Please enter your email address.');
+        return;
+      }
+      if (!validateEmail(email)) {
+        e.preventDefault();
+        showError('Please enter a valid email address.');
+        return;
+      }
+      if (!password) {
+        e.preventDefault();
+        showError('Please enter your password.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        e.preventDefault();
+        showError('Passwords do not match.');
+        return;
+      }
+
+      // Show success message (but still allow form submit)
+      successMessage.textContent = '✓ Successfully signed up!';
+      successMessage.style.display = 'block';
+    });
+
+    // Login validation
+    loginForm.addEventListener('submit', function(e) {
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+
+      const username = document.getElementById('loginUsername').value.trim();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      if (!username) {
+        e.preventDefault();
+        showError('Please enter your username.');
+        return;
+      }
+      if (!email) {
+        e.preventDefault();
+        showError('Please enter your email address.');
+        return;
+      }
+      if (!validateEmail(email)) {
+        e.preventDefault();
+        showError('Please enter a valid email address.');
+        return;
+      }
+      if (!password) {
+        e.preventDefault();
+        showError('Please enter your password.');
+        return;
+      }
+    });
+
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-password').forEach(function(toggle) {
+      toggle.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        if (input.type === 'password') {
+          input.type = 'text';
+          this.style.color = '#a29bfe';
+        } else {
+          input.type = 'password';
+          this.style.color = 'rgba(255 255 255 / 0.7)';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+

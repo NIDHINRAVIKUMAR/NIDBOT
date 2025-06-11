@@ -1,0 +1,22 @@
+{
+    "nidhinravikumar": {
+        "username": "nidhinravikumar",
+        "email": "nidhin4@gmail.com",
+        "hashed_password": "$2b$12$hVU7rZIRKT..XtX7aix7GuwvNiUP4Kz3zH/5evjd/15tuzqVlziLK"
+    },
+    "noble": {
+        "username": "noble",
+        "email": "noble@gmail.com",
+        "hashed_password": "$2b$12$aPTU8yxwI.evO1bP6zSRt.zznIekBtC3gzphTE65sfSH23Z04/ARS"
+    },
+    "vishnu": {
+        "username": "vishnu",
+        "email": "vishnu@gmail.com",
+        "hashed_password": "$2b$12$NS1uwRTL3VScoHKf53VnFumBPR5LA4fBrAd3W1U2DdNy8rkhwR5l2"
+    },
+    "tom": {
+        "username": "tom",
+        "email": "tom@gmail.com",
+        "hashed_password": "$2b$12$JFdZv9bL9W9TM7slccFY9.5p1XLT7d6ifneqbxMEuMBUYOlDHbTUa"
+    }
+}
